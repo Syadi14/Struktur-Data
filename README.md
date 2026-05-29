@@ -13,11 +13,11 @@ Sistem monitoring dan log aktivitas aplikasi sederhana untuk membandingkan perfo
 ## Cara Menjalankan (GitHub Codespace / Linux)
 
 ```bash
-# 1. Generate dataset (jalankan sekali)
+# 1. paste pada terminal untuk dijalankan
 make && ./bin/logmon
 # pilih menu 9 → masukkan jumlah log (contoh: 100000)
 
-# 2. Jalankan lagi untuk operasi & benchmark
+# 2. untuk operasi & benchmark
 ./bin/logmon
 # pilih menu 8 untuk melihat perbandingan waktu eksekusi
 ```
