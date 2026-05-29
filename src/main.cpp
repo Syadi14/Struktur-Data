@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include <algorithm>
 
 #include "log.h"
 #include "file_handler.h"
@@ -90,27 +91,76 @@ int main() {
         }
 
         case 2: {
-            std::string from, to;
-            std::cout << "From (YYYY-MM-DD HH:MM:SS): "; std::getline(std::cin, from);
-            std::cout << "To   (YYYY-MM-DD HH:MM:SS): "; std::getline(std::cin, to);
+            // Collect unique dates from loaded logs
+            std::vector<std::string> dates;
+            for (const auto& log : allLogs) {
+                std::string date = log.timestamp.substr(0, 10);
+                if (std::find(dates.begin(), dates.end(), date) == dates.end())
+                    dates.push_back(date);
+            }
+            std::sort(dates.begin(), dates.end());
+
+            std::cout << "\nAvailable dates:\n";
+            for (int i = 0; i < (int)dates.size(); i++)
+                std::cout << "  " << i + 1 << ". " << dates[i] << "\n";
+
+            int fromIdx, toIdx;
+            std::cout << "From (select number): "; std::cin >> fromIdx; clearInput();
+            std::cout << "To   (select number): "; std::cin >> toIdx;   clearInput();
+
+            if (fromIdx < 1 || fromIdx > (int)dates.size() ||
+                toIdx   < 1 || toIdx   > (int)dates.size()) {
+                std::cout << "Invalid choice.\n"; break;
+            }
+
+            std::string from = dates[fromIdx - 1] + " 00:00:00";
+            std::string to   = dates[toIdx   - 1] + " 23:59:59";
             std::cout << "\n[BST result]\n";
             printLogs(bst.searchByTimeRange(from, to));
             break;
         }
 
         case 3: {
+            std::cout << "\nSelect log level:\n"
+                      << "  1. INFO\n"
+                      << "  2. WARNING\n"
+                      << "  3. ERROR\n"
+                      << "Choice: ";
+            int lvlChoice; std::cin >> lvlChoice; clearInput();
+
             std::string level;
-            std::cout << "Level: "; std::getline(std::cin, level);
+            if      (lvlChoice == 1) level = "INFO";
+            else if (lvlChoice == 2) level = "WARNING";
+            else if (lvlChoice == 3) level = "ERROR";
+            else { std::cout << "Invalid choice.\n"; break; }
+
             std::cout << "\n[HashMap result]\n";
             printLogs(hm.searchByLevel(level));
             break;
         }
 
         case 4: {
-            std::string mod;
-            std::cout << "Module: "; std::getline(std::cin, mod);
+            // Collect unique modules from loaded logs
+            std::vector<std::string> modules;
+            for (const auto& log : allLogs) {
+                if (std::find(modules.begin(), modules.end(), log.module) == modules.end())
+                    modules.push_back(log.module);
+            }
+            std::sort(modules.begin(), modules.end());
+
+            std::cout << "\nAvailable modules:\n";
+            for (int i = 0; i < (int)modules.size(); i++)
+                std::cout << "  " << i + 1 << ". " << modules[i] << "\n";
+
+            int modIdx;
+            std::cout << "Choice: "; std::cin >> modIdx; clearInput();
+
+            if (modIdx < 1 || modIdx > (int)modules.size()) {
+                std::cout << "Invalid choice.\n"; break;
+            }
+
             std::cout << "\n[HashMap result]\n";
-            printLogs(hm.searchByModule(mod));
+            printLogs(hm.searchByModule(modules[modIdx - 1]));
             break;
         }
 
