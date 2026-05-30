@@ -72,7 +72,6 @@ int main() {
                   << "8.  Run benchmark (compare all structures)\n"
                   << "9.  Generate new dummy dataset\n"
                   << "10. Show all data\n"
-                  << "11. Show all data sorted by level (INFO → WARNING → ERROR)\n"
                   << "0.  Save & exit\n"
                   << "Choice: ";
         std::cin >> choice;
@@ -212,18 +211,35 @@ int main() {
         }
 
         case 10: {
-            std::cout << "\n[All logs — chronological]\n";
-            printLogs(allLogs);
-            break;
-        }
+            std::cout << "\nSort by:\n"
+                      << "  1. Date & time (chronological)\n"
+                      << "  2. Level (INFO → WARNING → ERROR)\n"
+                      << "  3. Module (A → Z)\n"
+                      << "Choice: ";
+            int sortChoice; std::cin >> sortChoice; clearInput();
 
-        case 11: {
             std::vector<Log> sorted = allLogs;
-            std::sort(sorted.begin(), sorted.end(), [](const Log& a, const Log& b) {
-                int pa = levelPriority(a.level), pb = levelPriority(b.level);
-                return pa != pb ? pa < pb : a.timestamp < b.timestamp;
-            });
-            std::cout << "\n[All logs — sorted by level: INFO → WARNING → ERROR]\n";
+
+            if (sortChoice == 1) {
+                std::sort(sorted.begin(), sorted.end(), [](const Log& a, const Log& b) {
+                    return a.timestamp < b.timestamp;
+                });
+                std::cout << "\n[All logs — sorted by date & time]\n";
+            } else if (sortChoice == 2) {
+                std::sort(sorted.begin(), sorted.end(), [](const Log& a, const Log& b) {
+                    int pa = levelPriority(a.level), pb = levelPriority(b.level);
+                    return pa != pb ? pa < pb : a.timestamp < b.timestamp;
+                });
+                std::cout << "\n[All logs — sorted by level: INFO → WARNING → ERROR]\n";
+            } else if (sortChoice == 3) {
+                std::sort(sorted.begin(), sorted.end(), [](const Log& a, const Log& b) {
+                    return a.module != b.module ? a.module < b.module : a.timestamp < b.timestamp;
+                });
+                std::cout << "\n[All logs — sorted by module A → Z]\n";
+            } else {
+                std::cout << "Invalid choice.\n"; break;
+            }
+
             printLogs(sorted);
             break;
         }
