@@ -213,8 +213,8 @@ int main() {
         case 10: {
             std::cout << "\nSort by:\n"
                       << "  1. Date & time (chronological)\n"
-                      << "  2. Level (INFO → WARNING → ERROR)\n"
-                      << "  3. Module (A → Z)\n"
+                      << "  2. Level (INFO -> WARNING -> ERROR)\n"
+                      << "  3. Module (A -> Z)\n"
                       << "Choice: ";
             int sortChoice; std::cin >> sortChoice; clearInput();
 
@@ -224,18 +224,18 @@ int main() {
                 std::sort(sorted.begin(), sorted.end(), [](const Log& a, const Log& b) {
                     return a.timestamp < b.timestamp;
                 });
-                std::cout << "\n[All logs — sorted by date & time]\n";
+                std::cout << "\n[All logs - sorted by date & time]\n";
             } else if (sortChoice == 2) {
                 std::sort(sorted.begin(), sorted.end(), [](const Log& a, const Log& b) {
                     int pa = levelPriority(a.level), pb = levelPriority(b.level);
                     return pa != pb ? pa < pb : a.timestamp < b.timestamp;
                 });
-                std::cout << "\n[All logs — sorted by level: INFO → WARNING → ERROR]\n";
+                std::cout << "\n[All logs - sorted by level: INFO -> WARNING -> ERROR]\n";
             } else if (sortChoice == 3) {
                 std::sort(sorted.begin(), sorted.end(), [](const Log& a, const Log& b) {
                     return a.module != b.module ? a.module < b.module : a.timestamp < b.timestamp;
                 });
-                std::cout << "\n[All logs — sorted by module A → Z]\n";
+                std::cout << "\n[All logs - sorted by module A -> Z]\n";
             } else {
                 std::cout << "Invalid choice.\n"; break;
             }
