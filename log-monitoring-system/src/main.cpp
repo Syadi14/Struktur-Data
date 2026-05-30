@@ -34,6 +34,12 @@ static void clearInput() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
+static int levelPriority(const std::string& level) {
+    if (level == "INFO")    return 0;
+    if (level == "WARNING") return 1;
+    return 2; // ERROR
+}
+
 // ─── Main ───────────────────────────────────────────────────────────────────
 
 int main() {
@@ -56,16 +62,18 @@ int main() {
     int choice = 0;
     while (true) {
         std::cout << "\n--- MENU ---\n"
-                  << "1. Insert new log\n"
-                  << "2. Search by time range\n"
-                  << "3. Search by level (INFO/WARNING/ERROR)\n"
-                  << "4. Search by module\n"
-                  << "5. Show all ERROR logs\n"
-                  << "6. Delete logs before timestamp\n"
-                  << "7. Statistics (count per level)\n"
-                  << "8. Run benchmark (compare all structures)\n"
-                  << "9. Generate new dummy dataset\n"
-                  << "0. Save & exit\n"
+                  << "1.  Insert new log\n"
+                  << "2.  Search by time range\n"
+                  << "3.  Search by level (INFO/WARNING/ERROR)\n"
+                  << "4.  Search by module\n"
+                  << "5.  Show all ERROR logs\n"
+                  << "6.  Delete logs before timestamp\n"
+                  << "7.  Statistics (count per level)\n"
+                  << "8.  Run benchmark (compare all structures)\n"
+                  << "9.  Generate new dummy dataset\n"
+                  << "10. Show all data\n"
+                  << "11. Show all data sorted by level (INFO → WARNING → ERROR)\n"
+                  << "0.  Save & exit\n"
                   << "Choice: ";
         std::cin >> choice;
         clearInput();
@@ -200,6 +208,23 @@ int main() {
             vs = VectorStore();  hm = HashMapStore();  bst = BSTStore();
             for (const auto& log : allLogs) { vs.insert(log); hm.insert(log); bst.insert(log); }
             std::cout << "Dataset reloaded.\n";
+            break;
+        }
+
+        case 10: {
+            std::cout << "\n[All logs — chronological]\n";
+            printLogs(allLogs);
+            break;
+        }
+
+        case 11: {
+            std::vector<Log> sorted = allLogs;
+            std::sort(sorted.begin(), sorted.end(), [](const Log& a, const Log& b) {
+                int pa = levelPriority(a.level), pb = levelPriority(b.level);
+                return pa != pb ? pa < pb : a.timestamp < b.timestamp;
+            });
+            std::cout << "\n[All logs — sorted by level: INFO → WARNING → ERROR]\n";
+            printLogs(sorted);
             break;
         }
 
